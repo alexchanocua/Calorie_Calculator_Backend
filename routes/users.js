@@ -3,9 +3,9 @@ const router = express.Router();
 // Schema
 const User = require('../Users');
 
-
+// might have to get rid of these
 router.get('/', (req, res, next) => {
-    res.json({message: "hi"});
+    res.json({message: "get/nouser"});
 });
 
 router.post('/', (req, res) => {
@@ -34,7 +34,8 @@ router
                     foodEntries: []
                 }],
             })
-            res.json(user);
+            // responding with the user object
+            res.json({id: user.userId, dailyLogs: user.dailyLogs});
         } catch (error) {
             res.status(500).json({ error: error.toString() });
         }
@@ -42,8 +43,14 @@ router
     .put((req, res) => {
         res.send(`Update User with Id ${req.params.id}`);
     })
-    .delete((req, res) => {
-        res.send(`Delete User with Id ${req.params.id}`);
+    .delete( async (req, res) => {
+        const { id } = req.params;
+        try {
+            const deletedUser = await User.deleteOne({userId: `${id}` });
+            res.json(deletedUser);
+        } catch (error) {
+            res.status(400).json({error: 'user does not exist'});
+        }
     });
 
 router.param("id", (req, res, next, id) => {
