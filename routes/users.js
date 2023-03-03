@@ -19,8 +19,8 @@ router
         // getting the user id
         const { id } = req.params;
         try {
-            const user = await User.findOne({userId: `${id}`});
-            res.json(user)
+            const user = await User.findOne({userId: `${id}`}, {'dailyLogs': 1});
+            res.json(user);
         } catch (error) {
             res.status(400).json({error: error.toString()});
         }
@@ -35,11 +35,8 @@ router
                 email: email,
                 userId: id, 
                 dailyLogs: [{
-                    totalCals: 0,
-                    totalProtein: 0, 
-                    totalFat: 0,
-                    foodEntries: []
-                }],
+                    foodEntries:[]
+                }]
             })
             // responding with the user object
             res.status(201).json({id: user.userId, dailyLogs: user.dailyLogs});
