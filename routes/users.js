@@ -15,8 +15,15 @@ router.post('/', (req, res) => {
 //  place this dynamic route last
 router
     .route('/:id')
-    .get((req, res) => {
-        res.send(`Get User with Id ${req.params.id}`);
+    .get( async (req, res) => {
+        // getting the user id
+        const { id } = req.params;
+        try {
+            const user = await User.findOne({userId: `${id}`});
+            res.json(user)
+        } catch (error) {
+            res.status(400).json({error: error.toString()});
+        }
     })
     .post( async (req,res) => {
         // get the userId from the params
@@ -35,16 +42,18 @@ router
                 }],
             })
             // responding with the user object
-            res.json({id: user.userId, dailyLogs: user.dailyLogs});
+            res.status(201).json({id: user.userId, dailyLogs: user.dailyLogs});
         } catch (error) {
             res.status(500).json({ error: error.toString() });
         }
     })
     .put((req, res) => {
+
         res.send(`Update User with Id ${req.params.id}`);
     })
     .delete( async (req, res) => {
         const { id } = req.params;
+        // deleting user from DB
         try {
             const deletedUser = await User.deleteOne({userId: `${id}` });
             res.json(deletedUser);
@@ -55,7 +64,6 @@ router
 
 router.param("id", (req, res, next, id) => {
     // TODO: implement logic to retrieve User info from MondoDB using Mongoose
-    console.log(id);
     next();
 })
 
