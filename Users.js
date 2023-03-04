@@ -14,10 +14,25 @@ const dailyLogs = new mongoose.Schema({
         name: {type: String, required: true},
         calories: {type: Number, required: true},
         protein: {type: Number, required: true},
+        carbs: {type: Number, required: true},
         fat: {type: Number, required: true},
         quantity: {type: Number, required: true},
-    }]
+    }],
+    date: {
+        type: Date, 
+        required: true, 
+        default: () => {
+            const now = new Date();
+            return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          }},
 });
+
+// virtual property for date in dailyLogs
+dailyLogs.virtual('dateWithoutTime')
+    .get(function (){
+        const date = this.get('date');
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    });
 
 // user schema
 const userSchema = new mongoose.Schema({

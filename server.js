@@ -3,7 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 // importing routes
 const usersRouter = require('./routes/users');
-// Mongoos Schema
+const foodItemsRouter = require('./routes/foodItems');
+// Mongoose Schema
 const User = require("./Users");
 
 // express instance
@@ -15,6 +16,7 @@ app.use(express.json()); // parse incoming json requests into object
 
 // router middleware
 app.use('/users', usersRouter);
+app.use('/foodItems', foodItemsRouter);
 
 
 // connecting to the DB
