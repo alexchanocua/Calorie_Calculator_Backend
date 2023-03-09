@@ -1,8 +1,9 @@
 const express = require('express');
-const DailyLogs = require('../DailyLogs');
+
 const router = express.Router();
 // Schema
 const User = require('../Users');
+const DailyLogs = require('../DailyLogs');
 
 // might have to get rid of these
 router.get('/', (req, res, next) => {
@@ -30,7 +31,14 @@ router
         // get the userId from the params
         const { id } = req.params;
         const { name, email } = req.body;
+
         try {
+            // check if a user already exists
+            const existingUser = await User.findOne({userId: id});
+            if(existingUser){
+                return res.status(409).json({error: "User already exists."});
+            } 
+            // create the new user
             const user = await User.create({
                 name: name,
                 email: email,

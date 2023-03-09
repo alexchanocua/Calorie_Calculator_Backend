@@ -2,7 +2,7 @@ const express = require('express');
 const { findOne } = require('../Users');
 const router = express.Router();
 // importing Schema
-const User = require('../Users');
+const DailyLogs = require('../DailyLogs');
 
 router
     .route('/:id')
@@ -12,12 +12,17 @@ router
         const { id } = req.params;
         const { date } = req.body;
         try{
-            const log = await User.findOne({
+            const log = await DailyLogs.findOne({
                 userId: id,
-                'dailyLogs.dateWithoutTime': date,
-                
+                date: date,
             });
-            res.json(log);
+            // if there is a log return the log else return empty array
+            if(log){
+                res.json(log);
+            } else {
+                res.json([]);
+            }
+            
         }catch(error) {
             res.status(500).json({error});
         }
@@ -30,38 +35,11 @@ router
         // update the users item list
         const { id } = req.params;
         const { type, name, calories, protein, carbs, fat, quantity, date} = req.body;
-        // const newItem = {
-        //     type: type,
-        //     name: name,
-        //     calories: calories,
-        //     protein: protein,
-        //     carbs: carbs,
-        //     fat: fat,
-        //     quantity: quantity,
-        // }
+        const myDate = new Date(date);
         try {
-            // const result = await User.findOneAndUpdate(
-            //     { 
-            //       userId: id,
-            //       'dailyLogs': { 
-            //         $elemMatch: { 
-            //           'dateWithoutTime': date, 
-            //         } 
-            //       } 
-            //     },
-            //     { 
-            //       $push: { 'dailyLogs.$.foodEntries': newItem },
-            //       $inc: {
-            //         'dailyLogs.$.totalCals': calories * quantity,
-            //         'dailyLogs.$.totalProtein': protein * quantity,
-            //         'dailyLogs.$.totalFat': fat * quantity,
-            //       },
-            //     },
-            //     { new: true }
-            //   );
-            const result = await User.findOneAndUpdate(
-                {userId: id, 'dailyLogs.dateWithoutTime': new Date(date)},
-                {$push: {'dailyLogs.$.foodEntries': {
+            const updatedLog = await DailyLogs.findOneAndUpdate(
+                {userId: id, date: myDate},
+                {$push : {foodEntries: {
                     type: type,
                     name: name,
                     calories: calories,
@@ -72,13 +50,27 @@ router
                 }}},
                 {new: true}
             )
-            res.json(result);
+            res.json(updatedLog);
         } catch (error) {
             res.status(500).json({error});
         }
     })
     .delete( async (req, res) => {
         // remove an item from the list
+        const { id } = req.params;
+        const { name, date } = req.body;
+        const myDate = new Date(date);
+        try {
+            // find the correct log and remove the item
+            const updatedLog = await DailyLogs.findOneAndUpdate(
+                {userId: id, date: myDate},
+                {$pull: { foodEntries: {_id: name} }},
+                {new: true, multi: false}
+            );
+            res.json(updatedLog);
+        } catch (error) {
+            res.json({error: error.toString()});
+        }
     })
 
 module.exports = router;

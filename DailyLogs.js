@@ -20,7 +20,8 @@ const dailyLogsSchema = new mongoose.Schema({
         required: true, 
         default: () => {
             const now = new Date();
-            return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            now.setUTCHours(0,0,0,0);
+            return now;
           }},
 });
 
@@ -33,4 +34,4 @@ dailyLogsSchema.virtual('dateWithoutTime')
         return new Date(date.getFullYear(), date.getMonth(), date.getDate());
     });
 
-module.exports = mongoose.model("DailyLog", dailyLogsSchema, "dailyLogs");
+module.exports = mongoose.model("DailyLogs", dailyLogsSchema, "dailyLogs");
