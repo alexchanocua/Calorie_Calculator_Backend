@@ -17,7 +17,7 @@ router
                 'dailyLogs.dateWithoutTime': date,
                 
             });
-            res.json(...log.dailyLogs);
+            res.json(log);
         }catch(error) {
             res.status(500).json({error});
         }
@@ -30,35 +30,48 @@ router
         // update the users item list
         const { id } = req.params;
         const { type, name, calories, protein, carbs, fat, quantity, date} = req.body;
-        const newItem = {
-            type: type,
-            name: name,
-            calories: calories,
-            protein: protein,
-            carbs: carbs,
-            fat: fat,
-            quantity: quantity,
-        }
+        // const newItem = {
+        //     type: type,
+        //     name: name,
+        //     calories: calories,
+        //     protein: protein,
+        //     carbs: carbs,
+        //     fat: fat,
+        //     quantity: quantity,
+        // }
         try {
+            // const result = await User.findOneAndUpdate(
+            //     { 
+            //       userId: id,
+            //       'dailyLogs': { 
+            //         $elemMatch: { 
+            //           'dateWithoutTime': date, 
+            //         } 
+            //       } 
+            //     },
+            //     { 
+            //       $push: { 'dailyLogs.$.foodEntries': newItem },
+            //       $inc: {
+            //         'dailyLogs.$.totalCals': calories * quantity,
+            //         'dailyLogs.$.totalProtein': protein * quantity,
+            //         'dailyLogs.$.totalFat': fat * quantity,
+            //       },
+            //     },
+            //     { new: true }
+            //   );
             const result = await User.findOneAndUpdate(
-                { 
-                  userId: id,
-                  'dailyLogs': { 
-                    $elemMatch: { 
-                      'dateWithoutTime': date, 
-                    } 
-                  } 
-                },
-                { 
-                  $push: { 'dailyLogs.$.foodEntries': newItem },
-                  $inc: {
-                    'dailyLogs.$.totalCals': calories * quantity,
-                    'dailyLogs.$.totalProtein': protein * quantity,
-                    'dailyLogs.$.totalFat': fat * quantity,
-                  },
-                },
-                { new: true }
-              );
+                {userId: id, 'dailyLogs.dateWithoutTime': new Date(date)},
+                {$push: {'dailyLogs.$.foodEntries': {
+                    type: type,
+                    name: name,
+                    calories: calories,
+                    protein: protein,
+                    carbs: carbs,
+                    fat: fat,
+                    quantity: quantity,
+                }}},
+                {new: true}
+            )
             res.json(result);
         } catch (error) {
             res.status(500).json({error});

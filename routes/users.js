@@ -1,4 +1,5 @@
 const express = require('express');
+const DailyLogs = require('../DailyLogs');
 const router = express.Router();
 // Schema
 const User = require('../Users');
@@ -19,7 +20,7 @@ router
         // getting the user id
         const { id } = req.params;
         try {
-            const user = await User.findOne({userId: `${id}`}, {'dailyLogs': 1});
+            const user = await User.findOne({userId: `${id}`});
             res.json(user);
         } catch (error) {
             res.status(400).json({error: error.toString()});
@@ -34,12 +35,10 @@ router
                 name: name,
                 email: email,
                 userId: id, 
-                dailyLogs: [{
-                    foodEntries:[]
-                }]
             })
+            const log = await DailyLogs.create({userId: id});
             // responding with the user object
-            res.status(201).json({id: user.userId, dailyLogs: user.dailyLogs});
+            res.status(201).json({id: user.userId, log: log});
         } catch (error) {
             res.status(500).json({ error: error.toString() });
         }
