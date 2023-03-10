@@ -13,7 +13,7 @@ const dailyLogsSchema = new mongoose.Schema({
         protein: {type: Number, required: true},
         carbs: {type: Number, required: true},
         fat: {type: Number, required: true},
-        quantity: {type: Number, required: true},
+        quantity: {type: Number, required: true}
     }],
     date: {
         type: Date, 

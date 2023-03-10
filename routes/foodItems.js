@@ -20,7 +20,7 @@ router
             if(log){
                 res.json(log);
             } else {
-                res.json([]);
+                res.status(404).json({error: "User not found."});
             }
             
         }catch(error) {
@@ -30,6 +30,24 @@ router
     })
     .post( async (req, res) => {
         // post new user items
+        const { id } = req.params;
+        const { date } = req.body;
+        const myDate = new Date(date);
+        try {
+            // check if we have a document already
+            const existingLog = await DailyLogs.findOne(
+                {userId: id, date: myDate}
+            );
+            // if it exists return the existingLog and error
+            if(existingLog){
+                res.status(409).json({existingLog, error: "Document already exists."})
+            }
+            // post a new dailyLog for the user
+            const log = await DailyLogs.create({userId: id, date: myDate});
+            res.status(201).json(log);
+        } catch (error) {
+            res.status(500).json({error: error.toString()});
+        }
     })
     .put( async (req, res) => {
         // update the users item list
@@ -58,13 +76,13 @@ router
     .delete( async (req, res) => {
         // remove an item from the list
         const { id } = req.params;
-        const { name, date } = req.body;
+        const { foodId, date } = req.body;
         const myDate = new Date(date);
         try {
             // find the correct log and remove the item
             const updatedLog = await DailyLogs.findOneAndUpdate(
                 {userId: id, date: myDate},
-                {$pull: { foodEntries: {_id: name} }},
+                {$pull: { foodEntries: {_id: foodId} }},
                 {new: true, multi: false}
             );
             res.json(updatedLog);
