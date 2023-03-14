@@ -8,9 +8,10 @@ router
     .route('/:id')
     .get( async (req, res) => {
         // get the user items by date
-        // get the date from the body
+        // get the date from the querystring
         const { id } = req.params;
-        const { date } = req.body;
+        const { date } = req.query;
+        
         try{
             const log = await DailyLogs.findOne({
                 userId: id,
