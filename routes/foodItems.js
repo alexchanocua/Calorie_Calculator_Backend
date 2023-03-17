@@ -66,7 +66,15 @@ router
                     carbs: carbs,
                     fat: fat,
                     quantity: quantity,
-                }}},
+                        }
+                    }
+                },
+                {$inc: {
+                    totalCals: calories * quantity,
+                    totalProtein: protein * quantity,
+                    totalFat: fat * quantity,
+                    totalCarbs: carbs * quantity,
+                }},
                 {new: true}
             )
             res.status(204).json(updatedLog);
