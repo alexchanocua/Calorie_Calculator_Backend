@@ -21,7 +21,7 @@ router
             if(log){
                 res.json(log);
             } else {
-                res.status(404).json({error: "User not found."});
+                res.json({foodEntries: [], error: "No foodEntries found."});
             }
             
         }catch(error) {
@@ -69,7 +69,7 @@ router
                 }}},
                 {new: true}
             )
-            res.json(updatedLog);
+            res.status(204).json(updatedLog);
         } catch (error) {
             res.status(500).json({error});
         }
