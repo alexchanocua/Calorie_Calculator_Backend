@@ -57,25 +57,27 @@ router
         const myDate = new Date(date);
         try {
             const updatedLog = await DailyLogs.findOneAndUpdate(
-                {userId: id, date: myDate},
-                {$push : {foodEntries: {
-                    type: type,
-                    name: name,
-                    calories: calories,
-                    protein: protein,
-                    carbs: carbs,
-                    fat: fat,
-                    quantity: quantity,
-                        }
-                    }
-                },
-                {$inc: {
+                { userId: id, date: myDate },
+                {
+                    $push: {
+                    foodEntries: {
+                        type: type,
+                        name: name,
+                        calories: calories,
+                        protein: protein,
+                        carbs: carbs,
+                        fat: fat,
+                        quantity: quantity,
+                    },
+                    },
+                    $inc: {
                     totalCals: calories * quantity,
                     totalProtein: protein * quantity,
                     totalFat: fat * quantity,
                     totalCarbs: carbs * quantity,
-                }},
-                {new: true}
+                    },
+                },
+                { new: true }
             )
             res.status(204).json(updatedLog);
         } catch (error) {

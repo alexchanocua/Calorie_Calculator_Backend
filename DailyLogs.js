@@ -6,6 +6,7 @@ const dailyLogsSchema = new mongoose.Schema({
     totalCals: {type: Number, default: 0},
     totalProtein: {type: Number, default: 0},
     totalFat: {type: Number, default: 0},
+    totalCarbs: {type: Number, default: 0},
     foodEntries: [{
         type: {type: String, required: true },
         name: {type: String, required: true},
