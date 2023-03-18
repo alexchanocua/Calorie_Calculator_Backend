@@ -93,7 +93,16 @@ router
             // find the correct log and remove the item
             const updatedLog = await DailyLogs.findOneAndUpdate(
                 {userId: id, date: myDate},
-                {$pull: { foodEntries: {_id: foodId} }},
+                {$pull: { 
+                    foodEntries: {_id: foodId},
+                    $inc: {
+                        totalCals: calories * quantity,
+                        totalProtein: protein * quantity,
+                        totalFat: fat * quantity,
+                        totalCarbs: carbs * quantity,
+                        }, 
+                    }
+                },
                 {new: true, multi: false}
             );
             res.json(updatedLog);
