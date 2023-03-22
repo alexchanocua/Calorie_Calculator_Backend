@@ -87,27 +87,28 @@ router
     .delete( async (req, res) => {
         // remove an item from the list
         const { id } = req.params;
-        const { foodId, date } = req.body;
+        const { foodId, date, calories, protein, fat, carbs, quantity } = req.body;
         const myDate = new Date(date);
         try {
             // find the correct log and remove the item
             const updatedLog = await DailyLogs.findOneAndUpdate(
-                {userId: id, date: myDate},
-                {$pull: { 
-                    foodEntries: {_id: foodId},
+                { userId: id, date: myDate },
+                {
+                    $pull: {
+                        foodEntries: { _id: foodId },
+                    },
                     $inc: {
-                        totalCals: calories * quantity,
-                        totalProtein: protein * quantity,
-                        totalFat: fat * quantity,
-                        totalCarbs: carbs * quantity,
-                        }, 
-                    }
+                        totalCals: -calories * quantity,
+                        totalProtein: -protein * quantity,
+                        totalFat: -fat * quantity,
+                        totalCarbs: -carbs * quantity,
+                    },
                 },
-                {new: true, multi: false}
+                { new: true, multi: false }
             );
             res.json(updatedLog);
         } catch (error) {
-            res.json({error: error.toString()});
+            res.status(500).json({error: error.toString()});
         }
     })
 
